@@ -1,5 +1,7 @@
 # cvnd-image-captioning
 
+just notes to myself that might also help other CDs get up and running with the COCO dataset. (_students will receive guidance in a very, very different format :)_)
+
 ## getting coco api up and running
 
 1. clone this repo: https://github.com/cocodataset/cocoapi
