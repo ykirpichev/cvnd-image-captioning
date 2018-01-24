@@ -38,7 +38,7 @@ now, we can use the captions in the training set to generate a lookup table that
 mkdir data
 ```
 
-2. place the jupyter notebook `build_vocab.ipynb`  in this repo at location `cocoapi/build_vocab.ipynb`, and run all files
+2. place the jupyter notebook `build_vocab.ipynb`  in this repo at location `cocoapi/build_vocab.ipynb`, and run all cells
 
      * this will generate a file `data/vocab.pkl` that we'll use soon for processing captions. 
 
@@ -52,4 +52,20 @@ mkdir data
 
      * dataset is so big already :-O that we won't worry about the testing set for now.
 
-2. more instructions coming soon to a repo near you
+2. place the jupyter notebook `play_with_api.ipynb`  in this repo at location `cocoapi/play_with_api.ipynb`, and run all cells
+
+     * change the settings to visualize the effect of different options
+
+the main idea behind this notebook // i have not completely decided the best way to resize ... so created a playground to experiment a bit, to see what makes the most sense. i'm currently considering a fe different options, that involve two distinct choices:
+- **CHOICE 1**: how to resize images? options:
+    - resize all images to 256x256 (ignore aspect ratio)
+    - resize all images to be 256 in smaller edge
+    - resize all images to 224x224 (ignore aspect ratio)
+    - resize all images to be 224 in smaller edge
+- **CHOICE 2**: how to crop? options:
+    - do random 224x224 crop (helps with generalization but could crop out crucial part of the image if not careful)
+    - do center 224x224 crop
+
+## setting up the data loader
+
+1. more instructions coming soon to a repo near you
