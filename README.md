@@ -46,8 +46,10 @@ mkdir data
 
 1. get some MORE data from here: http://cocodataset.org/#download 
 
-     * under Images, download: (1) **2014 Train images [83K/13GB]**, (2) **2014 Val images [41K/6GB]**, and (3) **2014 Test images [41K/6GB]**.  
+     * under Images, download: **2014 Train images [83K/13GB]** and **2014 Val images [41K/6GB]**.  
 
-     * extract all three folders and place them at location `cocoapi/images/train2014`, `cocoapi/images/val2014`, `cocoapi/images/test2014`
+     * extract both folders and place them at location `cocoapi/images/train2014` and `cocoapi/images/val2014`.
+
+     * dataset is so big already :-O that we won't worry about the testing set for now.
 
 2. more instructions coming soon to a repo near you
