@@ -15,47 +15,47 @@ sample_transform = transforms.Compose([
                              (0.229, 0.224, 0.225))])
 
 def get_loader(img_folder='images/train2014/', 
-			   transform=sample_transform,
-			   vocab_file='annotations/vocab.pkl',
-			   pad_word="<pad>",
-			   start_word="<start>",
-			   end_word="<end>",
-			   unk_word="<unk>",
-			   vocab_threshold=4,
-			   captions_file='annotations/captions_train2014.json',
-			   batch_size=5,
-			   shuffle=True,
-			   num_workers=2):
-	
-	# COCO caption dataset
-	coco = CoCoDataset(img_folder=img_folder,
-					   transform=transform,
-					   vocab_file=vocab_file,
-					   pad_word=pad_word,
-					   start_word=start_word,
-					   end_word=end_word,
-					   unk_word=unk_word,
-					   vocab_threshold=vocab_threshold,
-					   captions_file=captions_file)
+               transform=sample_transform,
+               vocab_file='annotations/vocab.pkl',
+               pad_word="<pad>",
+               start_word="<start>",
+               end_word="<end>",
+               unk_word="<unk>",
+               vocab_threshold=4,
+               captions_file='annotations/captions_train2014.json',
+               batch_size=5,
+               shuffle=True,
+               num_workers=2):
+    
+    # COCO caption dataset
+    coco = CoCoDataset(img_folder=img_folder,
+                       transform=transform,
+                       vocab_file=vocab_file,
+                       pad_word=pad_word,
+                       start_word=start_word,
+                       end_word=end_word,
+                       unk_word=unk_word,
+                       vocab_threshold=vocab_threshold,
+                       captions_file=captions_file)
 
-	# data loader for COCO dataset
-	data_loader = torch.utils.data.DataLoader(dataset=coco, 
-                                          	  batch_size=batch_size,
-                                          	  shuffle=shuffle,
-                                          	  num_workers=num_workers,
-                                          	  collate_fn=collate_fn)
-	return data_loader
+    # data loader for COCO dataset
+    data_loader = torch.utils.data.DataLoader(dataset=coco, 
+                                              batch_size=batch_size,
+                                              shuffle=shuffle,
+                                              num_workers=num_workers,
+                                              collate_fn=collate_fn)
+    return data_loader
 
 class CoCoDataset(data.Dataset):
     
     def __init__(self, img_folder, transform, vocab_file, pad_word,
-		start_word, end_word, unk_word, vocab_threshold, captions_file):
+        start_word, end_word, unk_word, vocab_threshold, captions_file):
         self.img_folder = img_folder
         self.transform = transform
         self.coco = COCO(captions_file)
         self.ids = list(self.coco.anns.keys())
         self.vocab = Vocabulary(vocab_file, pad_word, start_word,
-        	end_word, unk_word, vocab_threshold, captions_file)
+            end_word, unk_word, vocab_threshold, captions_file)
         self.vocab.get_vocab()
 
     def __getitem__(self, index):
