@@ -28,14 +28,14 @@ def get_loader(img_folder='images/train2014/',
 			   num_workers=2):
 	
 	# COCO caption dataset
-	coco = CoCoDataset(img_folder=img_folder, 
-					   transform=transform, 
-					   vocab_file=vocab_file, 
+	coco = CoCoDataset(img_folder=img_folder,
+					   transform=transform,
+					   vocab_file=vocab_file,
 					   pad_word=pad_word,
-					   start_word=start_word, 
-					   end_word=end_word, 
-					   unk_word=unk_word, 
-					   vocab_threshold=vocab_threshold, 
+					   start_word=start_word,
+					   end_word=end_word,
+					   unk_word=unk_word,
+					   vocab_threshold=vocab_threshold,
 					   captions_file=captions_file)
 
 	# data loader for COCO dataset
