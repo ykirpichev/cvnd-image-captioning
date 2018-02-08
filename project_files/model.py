@@ -1,8 +1,6 @@
 import torch
 import torch.nn as nn
 import torchvision.models as models
-from torch.nn.utils.rnn import pack_padded_sequence
-from torch.autograd import Variable
 
 class EncoderCNN(nn.Module):
     def __init__(self, embed_size):
@@ -25,6 +23,6 @@ class DecoderRNN(nn.Module):
     def forward(self, features, captions):
         embeddings = self.embed(captions)
         inputs = torch.cat((features.unsqueeze(1), embeddings), 1)
-        hiddens, _ = self.lstm(packed)
+        hiddens, _ = self.lstm(inputs)
         outputs = self.linear(hiddens)
         return outputs

@@ -9,15 +9,8 @@ from pycocotools.coco import COCO
 import numpy as np
 from tqdm import tqdm
 
-sample_transform = transforms.Compose([ 
-        transforms.CenterCrop(224),
-        transforms.RandomHorizontalFlip(), 
-        transforms.ToTensor(), 
-        transforms.Normalize((0.485, 0.456, 0.406), 
-                             (0.229, 0.224, 0.225))])
-
-def get_loader(img_folder='images/train2014/', 
-               transform=sample_transform,
+def get_loader(transform,
+               img_folder='images/train2014/', 
                vocab_file='annotations/vocab.pkl',
                pad_word="<pad>",
                start_word="<start>",
@@ -26,7 +19,6 @@ def get_loader(img_folder='images/train2014/',
                vocab_threshold=4,
                captions_file='annotations/captions_train2014.json',
                batch_size=1,
-               shuffle=True,
                num_workers=1):
     
     # COCO caption dataset
