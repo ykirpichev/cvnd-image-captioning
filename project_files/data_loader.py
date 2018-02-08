@@ -83,7 +83,7 @@ class CoCoDataset(data.Dataset):
         caption.append(self.vocab(self.vocab.start_word))
         caption.extend([self.vocab(token) for token in tokens])
         caption.append(self.vocab(self.vocab.end_word))
-        caption = torch.Tensor(caption)
+        caption = torch.Tensor(caption).long()
         return image, caption
 
     def __len__(self):
