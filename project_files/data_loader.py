@@ -6,6 +6,8 @@ from torchvision import transforms
 from vocabulary import Vocabulary
 from PIL import Image
 from pycocotools.coco import COCO
+import numpy as np
+from tqdm import tqdm
 
 sample_transform = transforms.Compose([ 
         transforms.CenterCrop(224),
@@ -23,9 +25,9 @@ def get_loader(img_folder='images/train2014/',
                unk_word="<unk>",
                vocab_threshold=4,
                captions_file='annotations/captions_train2014.json',
-               batch_size=5,
+               batch_size=1,
                shuffle=True,
-               num_workers=2):
+               num_workers=1):
     
     # COCO caption dataset
     coco = CoCoDataset(img_folder=img_folder,
@@ -38,12 +40,14 @@ def get_loader(img_folder='images/train2014/',
                        vocab_threshold=vocab_threshold,
                        captions_file=captions_file)
 
+
     # data loader for COCO dataset
     data_loader = torch.utils.data.DataLoader(dataset=coco, 
-                                              batch_size=batch_size,
-                                              shuffle=shuffle,
                                               num_workers=num_workers,
-                                              collate_fn=collate_fn)
+                                              batch_sampler=data.sampler.BatchSampler(sampler=coco.sampler,
+                                                                                      batch_size=batch_size,
+                                                                                      drop_last=False)
+                                              )
     return data_loader
 
 class CoCoDataset(data.Dataset):
@@ -57,6 +61,12 @@ class CoCoDataset(data.Dataset):
         self.vocab = Vocabulary(vocab_file, pad_word, start_word,
             end_word, unk_word, vocab_threshold, captions_file)
         self.vocab.get_vocab()
+        
+        # stuff
+        all_tokens = [nltk.tokenize.word_tokenize(str(self.coco.anns[self.ids[index]]['caption']).lower()) for index in tqdm(np.arange(len(self.ids)))]
+        self.caption_lengths = [len(token) for token in all_tokens]
+        self.caption_index = 0
+        self.get_next_sampler()
 
     def __getitem__(self, index):
         ann_id = self.ids[index]
@@ -65,8 +75,7 @@ class CoCoDataset(data.Dataset):
         path = self.coco.loadImgs(img_id)[0]['file_name']
 
         image = Image.open(os.path.join(self.img_folder, path)).convert('RGB')
-        if self.transform is not None:
-            image = self.transform(image)
+        image = self.transform(image)
 
         # Convert caption (string) to word ids.
         tokens = nltk.tokenize.word_tokenize(str(caption).lower())
@@ -74,24 +83,14 @@ class CoCoDataset(data.Dataset):
         caption.append(self.vocab(self.vocab.start_word))
         caption.extend([self.vocab(token) for token in tokens])
         caption.append(self.vocab(self.vocab.end_word))
-        target = torch.Tensor(caption)
-        return image, target
+        caption = torch.Tensor(caption)
+        return image, caption
 
     def __len__(self):
         return len(self.ids)
 
-def collate_fn(data):
-    # Sort a data list by caption length (descending order).
-    data.sort(key=lambda x: len(x[1]), reverse=True)
-    images, captions = zip(*data)
-
-    # Merge images (from tuple of 3D tensor to 4D tensor)
-    images = torch.stack(images, 0)
-
-    # Merge captions (from tuple of 1D tensor to 2D tensor).
-    lengths = [len(cap) for cap in captions]
-    targets = torch.zeros(len(captions), max(lengths)).long()
-    for i, cap in enumerate(captions):
-        end = lengths[i]
-        targets[i, :end] = cap[:end]        
-    return images, targets, lengths
+    def get_next_sampler(self):
+        sampled_length = np.unique(self.caption_lengths)[self.caption_index]
+        indices = list(np.where([self.caption_lengths[i] == sampled_length for i in np.arange(len(self.caption_lengths))])[0])
+        self.caption_index = (self.caption_index + 1) % len(np.unique(self.caption_lengths))
+        self.sampler = data.sampler.SubsetRandomSampler(indices=indices)
