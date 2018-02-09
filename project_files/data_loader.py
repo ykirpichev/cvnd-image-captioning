@@ -18,8 +18,8 @@ def get_loader(transform,
                unk_word="<unk>",
                vocab_threshold=4,
                captions_file='annotations/captions_train2014.json',
-               batch_size=1,
-               num_workers=1):
+               batch_size=128,
+               num_workers=2):
     
     # COCO caption dataset
     coco = CoCoDataset(img_folder=img_folder,
@@ -57,8 +57,9 @@ class CoCoDataset(data.Dataset):
         # stuff
         all_tokens = [nltk.tokenize.word_tokenize(str(self.coco.anns[self.ids[index]]['caption']).lower()) for index in tqdm(np.arange(len(self.ids)))]
         self.caption_lengths = [len(token) for token in all_tokens]
-        self.caption_index = 0
-        self.get_next_sampler()
+        self.captions_dict = dict([j, list(np.where([self.caption_lengths[i] == j 
+          for i in np.arange(len(self.caption_lengths))])[0])] for j in set(self.caption_lengths))
+        self.get_initial_sampler()
 
     def __getitem__(self, index):
         ann_id = self.ids[index]
@@ -81,8 +82,7 @@ class CoCoDataset(data.Dataset):
     def __len__(self):
         return len(self.ids)
 
-    def get_next_sampler(self):
-        sampled_length = np.unique(self.caption_lengths)[self.caption_index]
-        indices = list(np.where([self.caption_lengths[i] == sampled_length for i in np.arange(len(self.caption_lengths))])[0])
-        self.caption_index = (self.caption_index + 1) % len(np.unique(self.caption_lengths))
+    def get_initial_sampler(self):
+        sel_length = np.random.choice(self.caption_lengths)
+        indices = self.captions_dict[sel_length]
         self.sampler = data.sampler.SubsetRandomSampler(indices=indices)

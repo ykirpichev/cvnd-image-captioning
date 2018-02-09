@@ -4,10 +4,11 @@ from torch.autograd import Variable
 from torchvision import transforms
 from data_loader import get_loader
 from model import EncoderCNN, DecoderRNN
+import torch.utils.data as data
 
 model_path = './models/'
-embed_size = 100
-hidden_size = 50
+embed_size = 256
+hidden_size = 512
 learning_rate = 0.001
 num_epochs = 5
 
@@ -41,8 +42,17 @@ criterion = nn.CrossEntropyLoss().cuda() if torch.cuda.is_available() else nn.Cr
 params = list(decoder.parameters()) + list(encoder.vgg16.classifier) 
 optimizer = torch.optim.Adam(params=params, lr=learning_rate)
 
+total_step = ceil(len(data_loader.dataset.caption_lengths) / data_loader.batch_sampler.batch_size)
+
 for epoch in range(num_epochs):
-    for i, (images, captions) in enumerate(data_loader):
+    for i in range(total_step):
+
+        sel_length = np.random.choice(data_loader.dataset.caption_lengths)
+        indices = data_loader.dataset.captions_dict[sel_length]
+        new_sampler = data.sampler.SubsetRandomSampler(indices=indices)
+        data_loader.batch_sampler.sampler = new_sampler
+
+        images, captions = next(iter(data_loader))
 
         images = to_var(images, volatile=True)
         captions = to_var(captions)
@@ -57,7 +67,7 @@ for epoch in range(num_epochs):
 
         # print info
         print('Epoch [%d/%d], Step [%d/%d], Loss: %.4f, Perplexity: %5.4f'
-            %(epoch, args.num_epochs, i, total_step, loss.data[0], np.exp(loss.data[0]))) 
+            %(epoch, num_epochs, i, total_step, loss.data[0], np.exp(loss.data[0]))) 
 
     # save the models
     torch.save(decoder.state_dict(), os.path.join(args.model_path, 'decoder-%d.pkl' %(epoch+1)))
