@@ -1,16 +1,21 @@
 import torch
 import torch.nn as nn
 import torchvision.models as models
+from torch.autograd import Variable
 
 class EncoderCNN(nn.Module):
     def __init__(self, embed_size):
         super(EncoderCNN, self).__init__()
-        self.vgg16 = models.vgg16(pretrained=True)
-        in_features = list(self.vgg16.classifier.children())[0].in_features
-        self.vgg16.classifier = nn.Linear(in_features, embed_size)
+        resnet = models.resnet50(pretrained=True)
+        modules = list(resnet.children())[:-1]
+        self.resnet = nn.Sequential(*modules)
+        self.linear = nn.Linear(resnet.fc.in_features, embed_size)
 
     def forward(self, images):
-        features = self.vgg16(images)
+        features = self.resnet(images)
+        features = Variable(features.data)
+        features = features.view(features.size(0), -1)
+        features = self.linear(features)
         return features
 
 class DecoderRNN(nn.Module):
@@ -21,6 +26,7 @@ class DecoderRNN(nn.Module):
         self.linear = nn.Linear(hidden_size, vocab_size)
 
     def forward(self, features, captions):
+        captions = captions[:,:-1]
         embeddings = self.embed(captions)
         inputs = torch.cat((features.unsqueeze(1), embeddings), 1)
         hiddens, _ = self.lstm(inputs)

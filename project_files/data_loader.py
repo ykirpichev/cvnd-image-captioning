@@ -32,15 +32,21 @@ def get_loader(transform,
                        vocab_threshold=vocab_threshold,
                        captions_file=captions_file)
 
+    #
+    caption_lengths = get_caption_lengths(coco)
+
+    all_indices = list(np.where([caption_lengths[i] == 6 for i in np.arange(len(caption_lengths))])[0])
+    indices = list(np.random.choice(all_indices, size=batch_size))
+    initial_sampler = data.sampler.SubsetRandomSampler(indices=indices)
 
     # data loader for COCO dataset
     data_loader = torch.utils.data.DataLoader(dataset=coco, 
                                               num_workers=num_workers,
-                                              batch_sampler=data.sampler.BatchSampler(sampler=coco.sampler,
+                                              batch_sampler=data.sampler.BatchSampler(sampler=initial_sampler,
                                                                                       batch_size=batch_size,
                                                                                       drop_last=False)
                                               )
-    return data_loader
+    return data_loader, caption_lengths
 
 class CoCoDataset(data.Dataset):
     
@@ -53,13 +59,6 @@ class CoCoDataset(data.Dataset):
         self.vocab = Vocabulary(vocab_file, pad_word, start_word,
             end_word, unk_word, vocab_threshold, captions_file)
         self.vocab.get_vocab()
-        
-        # stuff
-        all_tokens = [nltk.tokenize.word_tokenize(str(self.coco.anns[self.ids[index]]['caption']).lower()) for index in tqdm(np.arange(len(self.ids)))]
-        self.caption_lengths = [len(token) for token in all_tokens]
-        self.captions_dict = dict([j, list(np.where([self.caption_lengths[i] == j 
-          for i in np.arange(len(self.caption_lengths))])[0])] for j in set(self.caption_lengths))
-        self.get_initial_sampler()
 
     def __getitem__(self, index):
         ann_id = self.ids[index]
@@ -82,7 +81,8 @@ class CoCoDataset(data.Dataset):
     def __len__(self):
         return len(self.ids)
 
-    def get_initial_sampler(self):
-        sel_length = np.random.choice(self.caption_lengths)
-        indices = self.captions_dict[sel_length]
-        self.sampler = data.sampler.SubsetRandomSampler(indices=indices)
+def get_caption_lengths(dataset):
+    all_tokens = [nltk.tokenize.word_tokenize(str(dataset.coco.anns[dataset.ids[index]]['caption']).lower()) for index in tqdm(np.arange(len(dataset.ids)))]
+    caption_lengths = [len(token) for token in all_tokens]
+    del all_tokens
+    return caption_lengths
