@@ -10,14 +10,14 @@ import numpy as np
 from tqdm import tqdm
 
 def get_loader(transform,
-               img_folder='images/train2014/', 
-               vocab_file='annotations/vocab.pkl',
+               img_folder='../cocoapi/images/train2014/', 
+               vocab_file='../cocoapi/annotations/vocab.pkl',
                pad_word="<pad>",
                start_word="<start>",
                end_word="<end>",
                unk_word="<unk>",
                vocab_threshold=4,
-               captions_file='annotations/captions_train2014.json',
+               captions_file='../cocoapi/annotations/captions_train2014.json',
                batch_size=128,
                num_workers=2):
     

@@ -14,7 +14,7 @@ def to_var(x, volatile=False):
         x = x.cuda()
     return Variable(x, volatile=volatile)
 
-model_path = './models/'
+# fyi models_path below. need to change if proj changes.
 embed_size = 256
 hidden_size = 512
 learning_rate = 0.001
@@ -48,9 +48,6 @@ params = list(decoder.parameters()) + list(encoder.linear.parameters())
 optimizer = torch.optim.Adam(params=params, lr=learning_rate)
 
 total_step = math.ceil(len(caption_lengths) / data_loader.batch_sampler.batch_size)
-
-if not os.path.exists(model_path):
-    os.makedirs(model_path)
 
 for epoch in range(num_epochs):
     
@@ -88,5 +85,5 @@ for epoch in range(num_epochs):
             break
 
     # save the models
-    torch.save(decoder.state_dict(), os.path.join(model_path, 'decoder-%d.pkl' %(epoch+1)))
-    torch.save(encoder.state_dict(), os.path.join(model_path, 'encoder-%d.pkl' %(epoch+1)))
+    torch.save(decoder.state_dict(), os.path.join('./models', 'decoder-%d.pkl' %(epoch+1)))
+    torch.save(encoder.state_dict(), os.path.join('./models', 'encoder-%d.pkl' %(epoch+1)))
