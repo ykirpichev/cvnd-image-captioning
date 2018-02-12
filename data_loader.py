@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 def get_loader(transform,
                img_folder='../cocoapi/images/train2014/', 
-               vocab_file='../cocoapi/annotations/vocab.pkl',
+               vocab_file='./vocab.pkl',
                pad_word="<pad>",
                start_word="<start>",
                end_word="<end>",
@@ -58,7 +58,6 @@ class CoCoDataset(data.Dataset):
         self.ids = list(self.coco.anns.keys())
         self.vocab = Vocabulary(vocab_file, pad_word, start_word,
             end_word, unk_word, vocab_threshold, captions_file)
-        self.vocab.get_vocab()
 
     def __getitem__(self, index):
         ann_id = self.ids[index]

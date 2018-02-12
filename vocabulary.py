@@ -26,6 +26,7 @@ class Vocabulary(object):
         self.unk_word = unk_word
         self.vocab_threshold = vocab_threshold
         self.captions_file = captions_file
+        self.get_vocab()
 
     def get_vocab(self):
         if not os.path.exists(self.vocab_file):

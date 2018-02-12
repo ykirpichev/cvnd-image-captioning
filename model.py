@@ -32,3 +32,6 @@ class DecoderRNN(nn.Module):
         hiddens, _ = self.lstm(inputs)
         outputs = self.linear(hiddens)
         return outputs
+
+    def sample(self, features):
+    	pass
