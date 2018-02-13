@@ -14,25 +14,27 @@ def to_var(x, volatile=False):
         x = x.cuda()
     return Variable(x, volatile=volatile)
 
-# fyi models_path below. need to change if proj changes.
+batch_size = 128
+vocab_threshold = 4
 embed_size = 256
 hidden_size = 512
 learning_rate = 0.001
 num_epochs = 5
-batch_size = 128
 save_every = 1
 
 # image preprocessing
-transform = transforms.Compose([ 
-    transforms.CenterCrop(224),
+transform_train = transforms.Compose([ 
+    transforms.RandomCrop(224),
     transforms.RandomHorizontalFlip(), 
     transforms.ToTensor(), 
     transforms.Normalize((0.485, 0.456, 0.406), 
                          (0.229, 0.224, 0.225))])
 
 # build data loader
-data_loader, caption_lengths = get_loader(transform=transform,
-                                          batch_size=batch_size)
+data_loader = get_loader(transform=transform_train,
+                         batch_size=batch_size,
+                         vocab_threshold=vocab_threshold)
+
 vocab_size = len(data_loader.dataset.vocab)
 
 # build the architectures
@@ -46,9 +48,10 @@ if torch.cuda.is_available():
 criterion = nn.CrossEntropyLoss().cuda() if torch.cuda.is_available() else nn.CrossEntropyLoss()
 
 params = list(decoder.parameters()) + list(encoder.linear.parameters()) 
+
 optimizer = torch.optim.Adam(params=params, lr=learning_rate)
 
-total_step = math.ceil(len(caption_lengths) / data_loader.batch_sampler.batch_size)
+total_step = math.ceil(len(data_loader.dataset.caption_lengths) / data_loader.batch_sampler.batch_size)
 
 for epoch in range(num_epochs):
     
@@ -56,9 +59,7 @@ for epoch in range(num_epochs):
     
     while i_step < total_step:
 
-        sel_length = np.random.choice(caption_lengths)
-        all_indices = np.where([caption_lengths[i] == sel_length for i in np.arange(len(caption_lengths))])[0]
-        indices = list(np.random.choice(all_indices, size=batch_size))
+        indices = data_loader.dataset.get_train_indices()
         new_sampler = data.sampler.SubsetRandomSampler(indices=indices)
         data_loader.batch_sampler.sampler = new_sampler
 
