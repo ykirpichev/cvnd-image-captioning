@@ -18,7 +18,7 @@ def get_loader(transform,
                unk_word="<unk>",
                captions_file='../cocoapi/annotations/captions_train2014.json',
                vocab_from_file=True,
-               img_folder='../cocoapi/images/train2014/', 
+               img_folder='../cocoapi/resized_images/train2014/', 
                num_workers=2):
     
     # COCO caption dataset
@@ -34,12 +34,12 @@ def get_loader(transform,
                           img_folder=img_folder)
 
     indices = dataset.get_train_indices()
-    sampler = data.sampler.SubsetRandomSampler(indices=indices)
+    initial_sampler = data.sampler.SubsetRandomSampler(indices=indices)
 
     # data loader for COCO dataset
     data_loader = data.DataLoader(dataset=dataset, 
                                   num_workers=num_workers,
-                                  batch_sampler=data.sampler.BatchSampler(sampler=sampler,
+                                  batch_sampler=data.sampler.BatchSampler(sampler=initial_sampler,
                                                                           batch_size=dataset.batch_size,
                                                                           drop_last=False))
 
@@ -96,10 +96,8 @@ class CoCoDataset(data.Dataset):
 
         return image, image_tensor, caption
 
-
     def __len__(self):
         return len(self.ids)
-
 
     def get_caption_lengths(self):
         print('Obtaining caption lengths ...')
