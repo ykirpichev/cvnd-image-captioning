@@ -7,8 +7,14 @@ from collections import Counter
 class Vocabulary(object):
     """Vocabulary class for an image-to-text model."""
     
-    def __init__(self, vocab_file, pad_word, start_word,
-        end_word, unk_word, vocab_threshold, captions_file):
+    def __init__(self, 
+        vocab_threshold=4, 
+        vocab_file='./vocab.pkl', 
+        pad_word="<pad>", 
+        start_word="<start>",
+        end_word="<end>", 
+        unk_word="<unk>", 
+        captions_file='../cocoapi/annotations/captions_train2014.json'):
         """Initialize the vocabulary.
         Args:
           vocab_file: File containing the vocabulary.

@@ -20,6 +20,7 @@ hidden_size = 512
 learning_rate = 0.001
 num_epochs = 5
 batch_size = 128
+save_every = 1
 
 # image preprocessing
 transform = transforms.Compose([ 
@@ -84,6 +85,7 @@ for epoch in range(num_epochs):
         if i_step >= total_step:
             break
 
-    # save the models
-    torch.save(decoder.state_dict(), os.path.join('./models', 'decoder-%d.pkl' %(epoch+1)))
-    torch.save(encoder.state_dict(), os.path.join('./models', 'encoder-%d.pkl' %(epoch+1)))
+    # save the weights
+    if epoch % save_every == 0:
+	    torch.save(decoder.state_dict(), os.path.join('./models', 'decoder-%d.pkl' %(epoch+1)))
+	    torch.save(encoder.state_dict(), os.path.join('./models', 'encoder-%d.pkl' %(epoch+1)))
