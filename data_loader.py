@@ -20,6 +20,20 @@ def get_loader(transform,
                unk_word="<unk>",
                vocab_from_file=True,
                num_workers=2):
+    """Returns the data loader.
+    Args:
+      transform: Image transform.
+      mode: One of 'train', 'val', or 'test'.
+      batch_size: Batch size.
+      vocab_threshold: Minimum word count threshold.
+      vocab_file: File containing the vocabulary.
+      start_word: Special word denoting sentence start.
+      end_word: Special word denoting sentence end.
+      unk_word: Special word denoting unknown words.
+      vocab_from_file: If False, create vocab from scratch & override any existing vocab_file.
+                       If True, load vocab from from existing vocab_file, if it exists.
+      num_workers: How many subprocesses to use for data loading (guideline: should be 4*num_GPU)
+    """
     
     assert mode in ['train', 'val', 'test'], "mode must be one of 'train', 'val', or 'test'."
     if vocab_from_file==False: assert mode=='train', "To generate vocab from captions file, must be in training mode (mode='train')."
@@ -34,7 +48,7 @@ def get_loader(transform,
         img_folder = '../cocoapi/resized_images/val2014/'
         annotations_file = '../cocoapi/annotations/captions_val2014.json'
     if mode == 'test':
-        assert batch_size==1, "Please change batch_size to 1 if testing your model."
+        #assert batch_size==1, "Please change batch_size to 1 if testing your model."
         assert os.path.exists(vocab_file), "Must first generate vocab.pkl from training data."
         assert vocab_from_file==True, "Change vocab_from_file to True."
         img_folder = '../cocoapi/images/test2014/'
@@ -85,7 +99,7 @@ class CoCoDataset(data.Dataset):
         if self.mode in ['train', 'val']:
             self.coco = COCO(annotations_file)
             self.ids = list(self.coco.anns.keys())
-            print('Obtaining caption lengths ...')
+            print('Obtaining caption lengths...')
             all_tokens = [nltk.tokenize.word_tokenize(str(self.coco.anns[self.ids[index]]['caption']).lower()) for index in tqdm(np.arange(len(self.ids)))]
             self.caption_lengths = [len(token) for token in all_tokens]
         else:
@@ -123,6 +137,7 @@ class CoCoDataset(data.Dataset):
             orig_image = Image.open(os.path.join(self.img_folder, path)).convert('RGB')
             image = self.transform(orig_image)
 
+            # return original image and pre-processed image tensor
             return orig_image, image
 
     def get_train_indices(self):
@@ -130,17 +145,6 @@ class CoCoDataset(data.Dataset):
         all_indices = np.where([self.caption_lengths[i] == sel_length for i in np.arange(len(self.caption_lengths))])[0]
         indices = list(np.random.choice(all_indices, size=self.batch_size))
         return indices
-
-    def get_random_item(self):
-        ann_id = random.sample(self.ids, 1)[0]
-        img_id = self.coco.anns[ann_id]['image_id']
-        path = self.coco.loadImgs(img_id)[0]['file_name']
-
-        # Convert image to tensor and pre-process using transform
-        image = Image.open(os.path.join(self.img_folder, path)).convert('RGB')
-        image_tensor = self.transform(image).unsqueeze(0)
-
-        return image, image_tensor
 
     def __len__(self):
         if self.mode in ['train', 'val']:
