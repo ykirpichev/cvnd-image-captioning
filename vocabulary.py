@@ -13,7 +13,7 @@ class Vocabulary(object):
         start_word="<start>",
         end_word="<end>",
         unk_word="<unk>",
-        captions_file='../cocoapi/annotations/captions_train2014.json',
+        annotations_file='../cocoapi/annotations/captions_train2014.json',
         vocab_from_file=True):
         """Initialize the vocabulary.
         Args:
@@ -22,7 +22,7 @@ class Vocabulary(object):
           start_word: Special word denoting sentence start.
           end_word: Special word denoting sentence end.
           unk_word: Special word denoting unknown words.
-          captions_file: Path for train annotation file.
+          annotations_file: Path for train annotation file.
           vocab_from_file: If False, create vocab from scratch & override any existing vocab_file
                            If True, load vocab from from existing vocab_file, if it exists
         """
@@ -31,7 +31,7 @@ class Vocabulary(object):
         self.start_word = start_word
         self.end_word = end_word
         self.unk_word = unk_word
-        self.captions_file = captions_file
+        self.annotations_file = annotations_file
         self.vocab_from_file = vocab_from_file
         self.get_vocab()
 
@@ -66,7 +66,7 @@ class Vocabulary(object):
             self.idx += 1
 
     def add_captions(self):
-        coco = COCO(self.captions_file)
+        coco = COCO(self.annotations_file)
         counter = Counter()
         ids = coco.anns.keys()
         for i, id in enumerate(ids):
