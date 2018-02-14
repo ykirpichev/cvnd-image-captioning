@@ -55,9 +55,7 @@ total_step = math.ceil(len(data_loader.dataset.caption_lengths) / data_loader.ba
 
 for epoch in range(num_epochs):
     
-    i_step = 0
-    
-    while i_step < total_step:
+    for i_step in range(0, total_step):
 
         indices = data_loader.dataset.get_train_indices()
         new_sampler = data.sampler.SubsetRandomSampler(indices=indices)
@@ -78,15 +76,11 @@ for epoch in range(num_epochs):
         loss.backward()
         optimizer.step()
             
-        i_step += 1
         # print info
         print('Epoch [%d/%d], Step [%d/%d], Loss: %.4f, Perplexity: %5.4f'
             %(epoch+1, num_epochs, i_step, total_step, loss.data[0], np.exp(loss.data[0]))) 
             
-        if i_step >= total_step:
-            break
-
     # save the weights
     if epoch % save_every == 0:
-	    torch.save(decoder.state_dict(), os.path.join('./models', 'decoder-%d.pkl' %(epoch+1)))
-	    torch.save(encoder.state_dict(), os.path.join('./models', 'encoder-%d.pkl' %(epoch+1)))
+        torch.save(decoder.state_dict(), os.path.join('./models', 'decoder-%d.pkl' %(epoch+1)))
+        torch.save(encoder.state_dict(), os.path.join('./models', 'encoder-%d.pkl' %(epoch+1)))
