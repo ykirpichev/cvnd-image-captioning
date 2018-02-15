@@ -24,7 +24,7 @@ def get_loader(transform,
     Args:
       transform: Image transform.
       mode: One of 'train', 'val', or 'test'.
-      batch_size: Batch size.
+      batch_size: Batch size (if in testing mode, must have batch_size=1).
       vocab_threshold: Minimum word count threshold.
       vocab_file: File containing the vocabulary.
       start_word: Special word denoting sentence start.
@@ -32,7 +32,7 @@ def get_loader(transform,
       unk_word: Special word denoting unknown words.
       vocab_from_file: If False, create vocab from scratch & override any existing vocab_file.
                        If True, load vocab from from existing vocab_file, if it exists.
-      num_workers: How many subprocesses to use for data loading (guideline: should be 4*num_GPU)
+      num_workers: Number of subprocesses to use for data loading (guideline: should be 4*num_GPU).
     """
     
     assert mode in ['train', 'val', 'test'], "mode must be one of 'train', 'val', or 'test'."
@@ -48,7 +48,7 @@ def get_loader(transform,
         img_folder = '../cocoapi/resized_images/val2014/'
         annotations_file = '../cocoapi/annotations/captions_val2014.json'
     if mode == 'test':
-        #assert batch_size==1, "Please change batch_size to 1 if testing your model."
+        assert batch_size==1, "Please change batch_size to 1 if testing your model."
         assert os.path.exists(vocab_file), "Must first generate vocab.pkl from training data."
         assert vocab_from_file==True, "Change vocab_from_file to True."
         img_folder = '../cocoapi/images/test2014/'
@@ -81,7 +81,7 @@ def get_loader(transform,
     else:
         data_loader = data.DataLoader(dataset=dataset,
                                       batch_size=dataset.batch_size,
-                                      shuffle=False,
+                                      shuffle=True,
                                       num_workers=num_workers)
 
     return data_loader
@@ -134,8 +134,9 @@ class CoCoDataset(data.Dataset):
             path = self.paths[index]
 
             # Convert image to tensor and pre-process using transform
-            orig_image = Image.open(os.path.join(self.img_folder, path)).convert('RGB')
-            image = self.transform(orig_image)
+            PIL_image = Image.open(os.path.join(self.img_folder, path)).convert('RGB')
+            orig_image = np.array(PIL_image)
+            image = self.transform(PIL_image)
 
             # return original image and pre-processed image tensor
             return orig_image, image
