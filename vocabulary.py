@@ -36,6 +36,7 @@ class Vocabulary(object):
         self.get_vocab()
 
     def get_vocab(self):
+    	"""Load the vocabulary from file OR build the vocabulary from scratch."""
         if os.path.exists(self.vocab_file) & self.vocab_from_file:
             with open(self.vocab_file, 'rb') as f:
                 vocab = pickle.load(f)
@@ -48,6 +49,7 @@ class Vocabulary(object):
                 pickle.dump(self, f)
         
     def build_vocab(self):
+    	"""Populate the dictionaries for converting tokens to integers (and vice-versa)."""
         self.init_vocab()
         self.add_word(self.start_word)
         self.add_word(self.end_word)
@@ -55,17 +57,20 @@ class Vocabulary(object):
         self.add_captions()
 
     def init_vocab(self):
+    	"""Initialize the dictionaries for conerting tokens to integers (and vice-versa)."""
         self.word2idx = {}
         self.idx2word = {}
         self.idx = 0
 
     def add_word(self, word):
+    	""""""
         if not word in self.word2idx:
             self.word2idx[word] = self.idx
             self.idx2word[self.idx] = word
             self.idx += 1
 
     def add_captions(self):
+    	"""Loop over training captions and add all tokens to the vocabulary that meet or exceed the threshold"""
         coco = COCO(self.annotations_file)
         counter = Counter()
         ids = coco.anns.keys()
