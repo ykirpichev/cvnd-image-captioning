@@ -14,7 +14,7 @@ class Vocabulary(object):
         end_word="<end>",
         unk_word="<unk>",
         annotations_file='../cocoapi/annotations/captions_train2014.json',
-        vocab_from_file=True):
+        vocab_from_file=False):
         """Initialize the vocabulary.
         Args:
           vocab_threshold: Minimum word count threshold.
