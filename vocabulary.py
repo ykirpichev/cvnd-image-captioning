@@ -57,7 +57,7 @@ class Vocabulary(object):
         self.add_captions()
 
     def init_vocab(self):
-    	"""Initialize the dictionaries for conerting tokens to integers (and vice-versa)."""
+    	"""Initialize the dictionaries for converting tokens to integers (and vice-versa)."""
         self.word2idx = {}
         self.idx2word = {}
         self.idx = 0
