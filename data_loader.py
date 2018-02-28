@@ -19,20 +19,22 @@ def get_loader(transform,
                end_word="<end>",
                unk_word="<unk>",
                vocab_from_file=True,
-               num_workers=2):
+               num_workers=4,
+               cocoapi_loc='..'):
     """Returns the data loader.
     Args:
       transform: Image transform.
       mode: One of 'train', 'val', or 'test'.
       batch_size: Batch size (if in testing mode, must have batch_size=1).
       vocab_threshold: Minimum word count threshold.
-      vocab_file: File containing the vocabulary.
+      vocab_file: File containing the vocabulary. 
       start_word: Special word denoting sentence start.
       end_word: Special word denoting sentence end.
       unk_word: Special word denoting unknown words.
       vocab_from_file: If False, create vocab from scratch & override any existing vocab_file.
                        If True, load vocab from from existing vocab_file, if it exists.
       num_workers: Number of subprocesses to use for data loading (guideline: should be 4*num_GPU).
+      cocoapi_loc: The location of the folder containing the COCO API: https://github.com/cocodataset/cocoapi
     """
     
     assert mode in ['train', 'val', 'test'], "mode must be one of 'train', 'val', or 'test'."
@@ -40,19 +42,19 @@ def get_loader(transform,
 
     if mode == 'train':
         if vocab_from_file==True: assert os.path.exists(vocab_file), "vocab_file does not exist.  Change vocab_from_file to False to create vocab_file."
-        img_folder = '../cocoapi/images/train2014/'
-        annotations_file = '../cocoapi/annotations/captions_train2014.json'
+        img_folder = os.path.join(cocoapi_loc, 'cocoapi/images/train2014/')
+        annotations_file = os.path.join(cocoapi_loc, 'cocoapi/annotations/captions_train2014.json')
     if mode == 'val':
         assert os.path.exists(vocab_file), "Must first generate vocab.pkl from training data."
         assert vocab_from_file==True, "Change vocab_from_file to True."
-        img_folder = '../cocoapi/images/val2014/'
-        annotations_file = '../cocoapi/annotations/captions_val2014.json'
+        img_folder = os.path.join(cocoapi_loc, 'cocoapi/images/val2014/')
+        annotations_file = os.path.join(cocoapi_loc, 'cocoapi/annotations/captions_val2014.json')
     if mode == 'test':
         assert batch_size==1, "Please change batch_size to 1 if testing your model."
         assert os.path.exists(vocab_file), "Must first generate vocab.pkl from training data."
         assert vocab_from_file==True, "Change vocab_from_file to True."
-        img_folder = '../cocoapi/images/test2014/'
-        annotations_file = '../cocoapi/annotations/image_info_test2014.json'
+        img_folder = os.path.join(cocoapi_loc, 'cocoapi/images/test2014/')
+        annotations_file = os.path.join(cocoapi_loc, 'cocoapi/annotations/image_info_test2014.json')
 
     # COCO caption dataset
     dataset = CoCoDataset(transform=transform,
