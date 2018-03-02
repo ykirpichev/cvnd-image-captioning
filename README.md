@@ -1,6 +1,6 @@
 # cvnd-image-captioning
 
-## setting up on your own machine
+## Obtain the COCO Dataset
 
 1. clone this repo: https://github.com/cocodataset/cocoapi
 ```
@@ -24,15 +24,15 @@ cd ..
           - **2014 Val images [41K/6GB]** (extract the `val2014` folder and place at location `cocoapi/images/val2014/`)
           - **2014 Test images [41K/6GB]** (extract the `test2014` folder and place at location `cocoapi/images/test2014/`)
 
-## rubric draft
+## Rubric (Draft)
 
 #### Files Submitted
 
 | Criteria       		|     Meets Specifications	        			            | 
 |:---------------------:|:---------------------------------------------------------:| 
 | Submission Files   | No modifications have been made to **data_loader.py** or **vocabulary.py**. |
-| `CNNEncoder`  | The `CNNEncoder` class in **model.py** passes the test in **Step 3** of **1_Preliminaries.ipynb**. |
-| `RNNDecoder`  | The `RNNDecoder` class in **model.py** passes the test in **Step 4** of **1_Preliminaries.ipynb**. |
+| `CNNEncoder`  | The `CNNEncoder` class in **model.py** passes the test in **Step 3** of **1_Preliminaries.ipynb**.  The chosen CNN architecture makes sense as an encoder for the image captioning task. |
+| `RNNDecoder`  | The `RNNDecoder` class in **model.py** passes the test in **Step 4** of **1_Preliminaries.ipynb**.  `RNNDecoder` class in **model.py** passes the test in **Step 3** of **3_Inference.ipynb**.  The chosen RNN architecture makes sense as a decoder for the image captioning task.  |
 | Saved Models | The `models/` folder contains the final, trained weights for the CNN and RNN architectures. It contains two pickle files: one corresponds to the encoder, and the other corresponds to the decoder.  |
 
 
@@ -41,7 +41,7 @@ cd ..
 | Criteria       		|     Meets Specifications	        			            | 
 |:---------------------:|:---------------------------------------------------------:| 
 | Using the data loader | When using the `get_loader` function in **data_loader.py** to train the model, most arguments are left at their default values, as outlined in **Step 1** of **1_Preliminaries.ipynb**.  In particular, the submission only (optionally) changes the values of the following arguments: `transform`, `mode`, `batch_size`, `vocab_threshold`, `vocab_from_file`. |
-| **Step 1, Question 1** | The submission describes how the hyperparameters were selected. |
+| **Step 1, Question 1** | The submission describes the chosen CNN-RNN architecture and details how the hyperparameters were selected. |
 | **Step 1, Question 2** | The submission describes how the transform used to pre-process the training images was selected.  The transform is congruent with the choice of CNN architecture. |
 | **Step 1, Question 3** | The submission describes how the trainable parameters were selected and has made a well-informed choice when deciding which parameters in the model should be trainable. |
 | **Step 1, Question 4** | The submission describes how the optimizer was selected. |
@@ -52,15 +52,15 @@ cd ..
 | Criteria       		|     Meets Specifications	        			            | 
 |:---------------------:|:---------------------------------------------------------:| 
 | `transform_test` | The transform used to pre-process the test images is congruent with the choice of CNN architecture.  It is also consistent with the transform specified in `transform_train` in **2_Training.ipynb**. | 
-| **Step 3** | The `sample` method in the `RNNDecoder` class passes the test in **Step 3** of **3_Inference.ipynb**. |
+| **Step 3** | The implementation of the `sample` method in the `RNNDecoder` class correctly leverages the RNN to generate predicted ... |
 | **Step 4** | The `clean_sentence` function ... w/ no special tokens (except unknown token which may appear). | 
 | **Step 5** | Learned something |
 
 
 ## Suggestions to Make your Project Stand Out!
 
-#### (1) Use the validation set to guide your search for appropriate hyperparameters.
+- Use the validation set to guide your search for appropriate hyperparameters.
 
-#### (2) Implement beam search to generate captions on new images.
+-  Implement beam search to generate captions on new images.
 
-#### (3) Tinker with your model - and train it for long enough - to obtain results that are comparable (or surpass!) recent research articles.
+- Tinker with your model - and train it for long enough - to obtain results that are comparable to (or surpass!) recent research articles.

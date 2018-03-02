@@ -5,8 +5,7 @@ from pycocotools.coco import COCO
 from collections import Counter
 
 class Vocabulary(object):
-    """Vocabulary class for an image-to-text model."""
-    
+
     def __init__(self,
         vocab_threshold,
         vocab_file='./vocab.pkl',
@@ -63,14 +62,14 @@ class Vocabulary(object):
         self.idx = 0
 
     def add_word(self, word):
-        """"""
+        """Add a token to the vocabulary."""
         if not word in self.word2idx:
             self.word2idx[word] = self.idx
             self.idx2word[self.idx] = word
             self.idx += 1
 
     def add_captions(self):
-        """Loop over training captions and add all tokens to the vocabulary that meet or exceed the threshold"""
+        """Loop over training captions and add all tokens to the vocabulary that meet or exceed the threshold."""
         coco = COCO(self.annotations_file)
         counter = Counter()
         ids = coco.anns.keys()
