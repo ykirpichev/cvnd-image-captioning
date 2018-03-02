@@ -33,6 +33,7 @@ cd ..
 | Submission Files   | No modifications have been made to **data_loader.py** or **vocabulary.py**. |
 | `CNNEncoder`  | The `CNNEncoder` class in **model.py** passes the test in **Step 3** of **1_Preliminaries.ipynb**. |
 | `RNNDecoder`  | The `RNNDecoder` class in **model.py** passes the test in **Step 4** of **1_Preliminaries.ipynb**. |
+| Saved Models | The `models/` folder contains the final, trained weights for the CNN and RNN architectures. It contains two pickle files: one corresponds to the encoder, and the other corresponds to the decoder.  |
 
 
 #### 2_Training.ipynb
@@ -40,15 +41,11 @@ cd ..
 | Criteria       		|     Meets Specifications	        			            | 
 |:---------------------:|:---------------------------------------------------------:| 
 | Using the data loader | When using the `get_loader` function in **data_loader.py** to train the model, most arguments are left at their default values, as outlined in **Step 1** of **1_Preliminaries.ipynb**.  In particular, the submission only (optionally) changes the values of the following arguments: `transform`, `mode`, `batch_size`, `vocab_threshold`, `vocab_from_file`. |
-| **Step 1, Task #1** | ... |
-| **Step 1, Question 1** | chosen hyperparameters have some evidence backing them re: why they are good choices (either from existing research papers or evidence where student demonstrated good performance). |
-| **Step 1, Task #2** | The transform used to pre-process the training images is congruent with the choice of CNN architecture. |
-| **Step 1, Question 2** | ... |
-| **Step 1, Task #3** | The submission has made a well-informed choice when deciding which parameters in the model should be trainable. |
-| **Step 1, Question 3** | ... |
-| **Step 1, Task #4** | ... |
-| **Step 1, Question 4** | ... |
-| **Step 2** | If the submission has amended the code used for training the model, it is well-organized and includes comments. |
+| **Step 1, Question 1** | The submission describes how the hyperparameters were selected. |
+| **Step 1, Question 2** | The submission describes how the transform used to pre-process the training images was selected.  The transform is congruent with the choice of CNN architecture. |
+| **Step 1, Question 3** | The submission describes how the trainable parameters were selected and has made a well-informed choice when deciding which parameters in the model should be trainable. |
+| **Step 1, Question 4** | The submission describes how the optimizer was selected. |
+| **Step 2** | The code cell in **Step 2** details all code used to train the model from scratch.  The output of the code cell shows exactly what is printed when running the code cell.  If the submission has amended the code used for training the model, it is well-organized and includes comments. |
 
 #### 3_Inference.ipynb
 
@@ -57,6 +54,7 @@ cd ..
 | `transform_test` | The transform used to pre-process the test images is congruent with the choice of CNN architecture.  It is also consistent with the transform specified in `transform_train` in **2_Training.ipynb**. | 
 | **Step 3** | The `sample` method in the `RNNDecoder` class passes the test in **Step 3** of **3_Inference.ipynb**. |
 | **Step 4** | The `clean_sentence` function ... w/ no special tokens (except unknown token which may appear). | 
+| **Step 5** | Learned something |
 
 
 ## Suggestions to Make your Project Stand Out!
