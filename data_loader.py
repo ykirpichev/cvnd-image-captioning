@@ -19,7 +19,7 @@ def get_loader(transform,
                end_word="<end>",
                unk_word="<unk>",
                vocab_from_file=True,
-               num_workers=4,
+               num_workers=0,
                cocoapi_loc='..'):
     """Returns the data loader.
     Args:
@@ -33,7 +33,7 @@ def get_loader(transform,
       unk_word: Special word denoting unknown words.
       vocab_from_file: If False, create vocab from scratch & override any existing vocab_file.
                        If True, load vocab from from existing vocab_file, if it exists.
-      num_workers: Number of subprocesses to use for data loading (guideline: should be 4*num_GPU).
+      num_workers: Number of subprocesses to use for data loading 
       cocoapi_loc: The location of the folder containing the COCO API: https://github.com/cocodataset/cocoapi
     """
     
